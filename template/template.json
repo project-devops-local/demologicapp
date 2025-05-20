@@ -56,6 +56,23 @@
                         "Succeeded"
                     ]
                 }
+            },
+            "Initialize_variables": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "nombre",
+                            "type": "string",
+                            "value": "maikol pelaez"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Response": [
+                        "SUCCEEDED"
+                    ]
+                }
             }
         },
         "outputs": {},
