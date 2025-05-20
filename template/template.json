@@ -1,0 +1,80 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "type": "Request",
+                "description": "Send email using Outlook account",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "email_to": {
+                                "type": "string"
+                            },
+                            "email_subject": {
+                                "type": "string"
+                            },
+                            "email_body": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "actions": {
+            "Send_an_email_": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['office365_template']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "To": "@triggerBody()?['email_to']",
+                        "Subject": "@triggerBody()?['email_subject']",
+                        "Body": "<p class=\"editor-paragraph\">@{triggerBody()?['email_body']}</p>",
+                        "Importance": "Normal"
+                    },
+                    "path": "/v2/Mail"
+                },
+                "runAfter": {}
+            },
+            "Response": {
+                "type": "Response",
+                "kind": "Http",
+                "inputs": {
+                    "statusCode": 200
+                },
+                "runAfter": {
+                    "Send_an_email_": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "type": "Object",
+                "defaultValue": {}
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "type": "Object",
+            "value": {
+                "office365_template": {
+                    "id": "/subscriptions/0d26cc62-8691-4b80-b628-df1072eb000f/providers/Microsoft.Web/locations/eastus/managedApis/office365",
+                    "connectionId": "/subscriptions/0d26cc62-8691-4b80-b628-df1072eb000f/resourceGroups/devops/providers/Microsoft.Web/connections/office365"
+                }
+            }
+        }
+    }
+}
